@@ -1,5 +1,6 @@
 # Calculogic JSON Prototyping Kit
-1) Constants & Enums (recommended)
+## 1. Constants & Enums (recommended)
+```json
 {
 "$constants": {
 "concerns": ["Build", "BuildStyle", "Logic", "Knowledge", "Results", "ResultsStyle"],
@@ -8,9 +9,11 @@
 "visibility": ["public", "private", "official"]
 }
 }
+```
 
-2) Base Shapes (composition contract)
+## 2. Base Shapes (composition contract)
 Only the Configuration has concern tabs. Everything inside it is ordered exactly as it appears visually (per tab).
+```json
 {
 "Configuration": {
 "id": "cfg-uid",
@@ -30,7 +33,9 @@ Only the Configuration has concern tabs. Everything inside it is ordered exactly
 "Results":  { "sequence": [] },
 "ResultsStyle": { "sequence": [] }
 },
+```
 
+```json
 "Atomic": {
 "id": "atom-uid",
 "type": "AtomicComponent",
@@ -41,7 +46,9 @@ Only the Configuration has concern tabs. Everything inside it is ordered exactly
 },
 "data": { }
 },
+```
 
+```json
 "ContainerNode": {
 "id": "ctr-uid",
 "type": "Container",
@@ -54,9 +61,11 @@ Only the Configuration has concern tabs. Everything inside it is ordered exactly
 "sequence": []
 }
 }
+```
 
-3) Sequence Item Shapes per Concern
+## 3. Sequence Item Shapes per Concern
 Each entry inside a sequence is one of these shapes. Keep visual order.
+```json
 {
 "SeqAtomic": {
 "kind": "Atomic",
@@ -68,7 +77,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 },
 "props": { }
 },
+```
 
+```json
 "SeqContainer": {
 "kind": "Container",
 "ref": "ctr-uid",
@@ -79,8 +90,10 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 "sequence": []
 }
 }
+```
 
-4) Minimal, Valid Example (no subcontainers; two atomics in Build; single items elsewhere)
+## 4. Minimal, Valid Example (no subcontainers; two atomics in Build; single items elsewhere)
+```json
 {
 "id": "cfg-001",
 "type": "Container",
@@ -92,7 +105,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 "updated": "2025-10-30T20:00:00Z",
 "description": "Two checkboxes; one results display; synchronized across concerns"
 },
+```
 
+```json
 "Build": {
 "sequence": [
 {
@@ -125,7 +140,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 }
 ]
 },
+```
 
+```json
 "BuildStyle": {
 "sequence": [
 {
@@ -162,7 +179,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 }
 ]
 },
+```
 
+```json
 "Workflow": {
 "sequence": [
 {
@@ -202,7 +221,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 }
 ]
 },
+```
 
+```json
 "Knowledge": {
 "sequence": [
 {
@@ -219,7 +240,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 }
 ]
 },
+```
 
+```json
 "Results": {
 "sequence": [
 {
@@ -234,7 +257,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 }
 ]
 },
+```
 
+```json
 "ResultsStyle": {
 "sequence": [
 {
@@ -248,7 +273,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 }
 ]
 },
+```
 
+```json
 "atoms": [
 {
 "id": "atom-001",
@@ -271,7 +298,9 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 "data": { "dataType": "boolean", "defaultValue": false }
 }
 ],
+```
 
+```json
 "containers": [
 {
 "id": "ctr-fn-001",
@@ -286,8 +315,10 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 }
 ]
 }
+```
 
-5) With Subcontainers (compact pattern)
+## 5. With Subcontainers (compact pattern)
+```json
 {
 "Workflow": {
 "sequence": [
@@ -310,11 +341,12 @@ Each entry inside a sequence is one of these shapes. Keep visual order.
 ]
 }
 }
+```
 
-6) Lineage & Meta-to-Comment Rule (engine hint)
+## 6. Lineage & Meta-to-Comment Rule (engine hint)
 Every item carries meta and optional lineage (array of ancestor ids).
 On export, the engine emits ordered code + comments using meta (and may include per-property comments when props originate from UI selections).
-7) ID & Ordering Rules
+## 7. ID & Ordering Rules
 IDs are unique: cfg-*, ctr-*, atom-*.
 Order is authoritative: the sequence array per concern mirrors the builder's visual order.
 Cross-tab sync: the same ref must maintain relative position wherever it appears.

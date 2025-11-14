@@ -1,8 +1,10 @@
-# MVP Atomic Catalog V1.0.0
+# MVP Atomic Catalog v1.0.0
+
 Below is an MVP Atomic Catalog that’s just what you need to express an Enneagram project (HTML + CSS + TS/TSX), plus a separate list for exporter auto-writes, and then a final “extras / niceties” section.
-1. Exporter auto-write layer (TSX / TS / CSS)
-These are not atoms. The engine just does them automatically based on file type, so you never model them in the catalog.
-build.tsx
+
+## 1. Exporter auto-write layer (TSX / TS / CSS)
+### build.tsx
+```tsx
 Exporter auto-writes:
 import React from "react";
 
@@ -20,9 +22,10 @@ Top-level component shell, e.g.:
     </>
   );
 }
+```
 
-
-results.tsx
+### results.tsx
+```tsx
 import React from "react";
 
 
@@ -39,9 +42,10 @@ Top-level component, e.g.:
     </>
   );
 }
+```
 
-
-logic.ts
+### logic.ts
+```ts
 Module shell, e.g.:
 
  // generated from Logic concern (logic.*)
@@ -53,13 +57,15 @@ export const EnneagramLogic = {
 
 
 Type imports if needed (from knowledge.json schemas, etc.).
+```
 
-
-knowledge.json
+### knowledge.json
+```json
 Plain JSON file: no extra boilerplate, just the merged kb.* atoms.
+```
 
-
-CSS files
+### CSS files
+```txt
 build.css / results.css:
 
 
@@ -70,20 +76,22 @@ Nothing else is auto-magic; everything comes from style.* atoms.
 
 
 
-2. MVP Atomic Catalog – Enneagram Core (v1.0)
+
 This is the minimal set you need to represent:
-The intro + questions UI
+- The intro + questions UI
 
 
-The CSS you showed
+- The CSS you showed
 
 
-The Enneagram logic + rating engine
+- The Enneagram logic + rating engine
 
 
-The structured results view
+- The structured results view
+```
 
-
+## 2. MVP Atomic Catalog – Enneagram Core (v1.0)
+```json
 {
   "catalogVersion": "1.0.0",
   "atoms": [
@@ -389,86 +397,86 @@ The knowledge tables (M/F/D/W/S, types, functions)
 
 
 The structured, collapsible results.
+```
 
-
-
+## 3. Extras / Niceties (future or optional)
 3. Extras / Niceties (can come later, or live at end of catalog)
 These are the “nice-to-have” atoms you had before. They’re not exporter boilerplate; they’re just not strictly required for the Enneagram MVP:
 Extra UI / Layout
-ui.image – for logos, illustrations.
+- ui.image – for logos, illustrations.
 
 
-ui.link – for “learn more” links.
+- ui.link – for “learn more” links.
 
 
-ui.icon – for icons in buttons or headings.
+- ui.icon – for icons in buttons or headings.
 
 
-ui.progress – progress bar (e.g. “Question 3 of 5”).
+- ui.progress – progress bar (e.g. “Question 3 of 5”).
 
 
-layout.grid – responsive grids if you want fancier layouts.
+- layout.grid – responsive grids if you want fancier layouts.
 
 
 Extra Style
-style.var – design tokens (--color-primary, spacing scale).
+- style.var – design tokens (--color-primary, spacing scale).
 
 
-style.query – container/media queries for responsive rules.
+- style.query – container/media queries for responsive rules.
 
 
-style.grid-template – CSS grid areas.
+- style.grid-template – CSS grid areas.
 
 
-style.motion – animation/transition presets for collapsibles.
+- style.motion – animation/transition presets for collapsibles.
 
 
 Extra Logic
-logic.validate – field-level validation (required, range, pattern).
+- logic.validate – field-level validation (required, range, pattern).
 
 
-logic.showHide – imperatively show/hide elements outside <details>.
+- logic.showHide – imperatively show/hide elements outside <details>.
 
 
-logic.repeat – logic-side loops if you want to explicitly model iteration.
+- logic.repeat – logic-side loops if you want to explicitly model iteration.
 
 
-logic.toggle – boolean toggling with side effects.
+- logic.toggle – boolean toggling with side effects.
 
 
-logic.delay – time-based flows.
+- logic.delay – time-based flows.
 
 
-logic.bind – linking computed expressions into specific props.
+- logic.bind – linking computed expressions into specific props.
 
 
-logic.route – multi-page routing within a project.
+- logic.route – multi-page routing within a project.
 
 
-Extra Knowledge
-kb.enum – named enumerations.
+### Extra Knowledge
+- kb.enum – named enumerations.
 
 
-kb.schema – structured data models for stricter typing.
+- kb.schema – structured data models for stricter typing.
 
 
-kb.ref – cross-config / cross-project references.
+- kb.ref – cross-config / cross-project references.
 
 
-Meta / System
-meta.comment – human comments per concern (super nice in exports).
+### Meta / System
+- meta.comment – human comments per concern (super nice in exports).
 
 
-meta.example – “here’s an example usage” fragments.
+- meta.example – “here’s an example usage” fragments.
 
 
-system.anchor – cross-concern linking (Build → Logic → Results).
+- system.anchor – cross-concern linking (Build → Logic → Results).
 
 
-system.debug – debug hooks (logs, probes).
+- system.debug – debug hooks (logs, probes).
 
 
-system.doc-block – top-level documentation chunks in the project.
+- system.doc-block – top-level documentation chunks in the project.
 
 
 You can keep all of these in the catalog, but mentally treat them as:
@@ -479,4 +487,3 @@ Extended / optional: everything in this section, which you’ll “turn on” as
 
 
 That way your living document stays clean: you know exactly which atoms are necessary to recreate the Enneagram test, which ones are future-power, and what the exporter will simply auto-write for you.
-
