@@ -1,315 +1,116 @@
 # Builder Documentation Modal
-1. Treat Documentation as its own tiny cross-cutting concern
-Make a small “Documentation” layer that every UI element can tap into:
-Per-tab (or per-thing):
-Build
 
-
-What this thing is structurally (tab, header, canvas, config list, etc.)
-
-
-Where its docs data lives (a key/id into Knowledge)
-
-
-BuildStyle
-
-
-Where the ℹ️ icon sits
-
-
-Tooltip position rules
-
-
-“This thing has docs” affordances (hover highlight, etc.)
-
-
-Logic
-
-
-onHoverInfo → show tooltip
-
-
-onClickInfo → open modal (with a docId)
-
-
-onCloseModal → close
-
-
-Knowledge
-
-
-The actual documentation content indexed by docId
-
-
-Short summary (for tooltips)
-
-
-Extended content chunks (for modal sections)
-
-
-Results
-
-
-“Resolved doc payload” for that docId
-
-
-Think: { title, summary, sections[], links[] }
-
-
-ResultsStyle
-
-
-The modal layout template:
-
-
-Header (title, concern name)
-
-
-Optional “Recommended workflows”
-
-
-Body sections
-
-
-Cross-links list
-
-
-Close button, scroll behavior, etc.
-
-
-In other words: Results = “doc data ready to render”, ResultsStyle = “how the documentation modal looks.”
-
-2. Implementation order (matching your left→down path)
-You can implement the docs system in a way that lines up with how you described scanning the UI:
-Step 1 – Core docs engine + modal shell
-Global DocumentationModal component (even if it’s ugly at first)
-
-
-Global state: currentDocId | null
-
-
-Logic: open/close, escape key, clicking backdrop, etc.
-
-
-Wire only the header/tab info icons to it at first:
-
-
-Build, Logic, Knowledge, Results, BuildStyle, ResultsStyle
-
-
-Publish block’s ℹ️ if you want
-
-
-Now you have a working “documentation output system” using Results/ResultsStyle metaphor, before touching the main builder body.
-Step 2 – Left column skeleton
-Top-down, left side:
-Configurations section shell
-
-
-Just the area where the configs list will go
-
-
-ℹ️ icon for “Configurations”
-
-
-Connect it to the same docs system (new docId)
-
-
-Atomic components section shell
-
-
-Header row with name + ℹ️
-
-
-Empty body for now
-
-
-Docs hook wired
-
-
-Search section shell
-
-
-Search bar area + ℹ️
-
-
-Docs hook wired
-
-
-Each of these only needs:
-Info icon placement (BuildStyle)
-
-
-One doc key (Knowledge)
-
-
-Click → open docs modal (Logic)
-
-
-Step 3 – Center canvas area
-Add canvas header row (“Canvas” or similar) with ℹ️
-
-
-Empty canvas body is fine right now
-
-
-Same docs hookup
-
-
-Step 4 – Right inspector
-Inspector header (“Inspector” / “Details”) + ℹ️
-
-
-Empty body, docs hooked in
-
-
-At that point:
-Even if the builder doesn’t do much yet, the entire frame – header, left columns, canvas, inspector – all participate in the same “Documentation output” system.
-
-3. Why putting docs first helps
-You get a single, reusable Results/ResultsStyle pattern for documentation.
-
-
-Every time you add a new structural piece later (real config list, real atom palette, real inspector), you already have:
-
-
-An info icon convention
-
-
-A way to attach a docId
-
-
-A place for the explanation to render
-
-
-Interface/Builder doc: define the skeleton
-Keep it light but explicit:
-What the docs engine is:
-
- A global system that:
-
-
-Resolves docId → content (Knowledge / Results)
-
-
-Renders it in a standard layout (ResultsStyle)
-
-
-Exposes a tiny Logic API: openDoc(docId), closeDoc()
-
-
-Minimal IR for docs entries:
-
-
-docId
-
-
-concern (Build / Logic / Header / Canvas / etc.)
-
-
-summary (tooltip)
-
-
-sections[] (title + body)
-
-
-links[] (to other docs)
-
-
-Interaction contracts:
-
-
-Any UI element can:
-
-
-Declare docId
-
-
-Show a tooltip using summary
-
-
-Call openDoc(docId) on click
-
-
-That’s enough to keep it charter-aligned and let you wire the header + shells.
-2. Later: separate “Documentation Engine” living doc
-Once the builder frame is real, make a small dedicated doc (and eventually its own repo or package) that:
-Treats documentation itself as pure Calculogic data:
-
-
-One or more “Docs Projects”
-
-
-Configurations representing doc pages / topics
-
-
-Knowledge tab holding structured doc content
-
-
-Results/ResultsStyle defining how docs render in:
-
-
-Modals
-
-
-Side panels
-
-
-Full-page help
-
-
-Defines export hooks for different UI types:
-
-
-“Web builder docs”
-
-
-“VS Code extension docs”
-
-
-“Electron desktop docs”
-
-
-etc.
-
-
-This is where the dogfooding really kicks in: the docs engine becomes a Calculogic-powered app that the builder just consumes.
-3. Practical sequence
-Now, in the Interface doc:
-
-
-Add a short section: “Documentation Engine: Skeleton & Contracts.”
-
-
-Define IR fields + openDoc/closeDoc + tooltip rules.
-
-
-Implement just enough to support:
-
-
-Header tab docs
-
-
-Header publish docs
-
-
-Left/center/right frame shells
-
-
-After the header + frame exist:
-
-
-Spin up a “Documentation Engine” living doc.
-
-
-Start modeling docs as Calculogic configurations.
-
-
-Plan how docs configs get exported/loaded into the UI.
-
-
-That way:
-You don’t over-scope the current doc.
-
-
-You still design it so future you can fully dogfood docs in a stack-agnostic way.
+This guide formalizes the documentation modal as a first-class, cross-cutting concern inside the builder. The goal is to deliver a reusable documentation engine that every UI element can tap into from the beginning of development.
+
+## 1. Treat documentation as a cross-cutting concern
+Create a lightweight “Documentation” layer that any part of the interface can invoke.
+
+### Per-tab responsibilities
+- **Build**
+  - Identify the structural element (tab, header, canvas, configuration list, etc.).
+  - Declare where the documentation data lives (a key or ID inside Knowledge).
+- **BuildStyle**
+  - Position the ℹ️ icon.
+  - Define tooltip placement rules.
+  - Provide discovery affordances (hover highlight, focus states, etc.).
+- **Logic (Workflow)**
+  - `onHoverInfo` → show tooltip.
+  - `onClickInfo` → open the modal with a `docId`.
+  - `onCloseModal` → close the modal.
+- **Knowledge**
+  - Store the documentation content indexed by `docId`.
+  - Provide short summaries for tooltips.
+  - Supply extended content chunks for modal sections.
+- **Results**
+  - Prepare the resolved documentation payload for the given `docId` (e.g., `{ title, summary, sections[], links[] }`).
+- **ResultsStyle**
+  - Define the modal layout template: header, optional “Recommended workflows,” body sections, cross-links, close button, and scroll behavior.
+
+**Interpretation:** Results deliver documentation data ready to render; ResultsStyle governs how the modal presents that data.
+
+## 2. Implementation order (matching the left→down scan path)
+### Step 1 – Core documentation engine and modal shell
+- Build a global `DocumentationModal` component (visual polish can follow later).
+- Introduce global state: `currentDocId | null`.
+- Implement Logic behavior: open/close, escape key handling, backdrop clicks, etc.
+- Wire the header/tab info icons first: Build, Logic, Knowledge, Results, BuildStyle, and ResultsStyle (include Publish if desired).
+
+This establishes a functioning documentation output system using the Results / ResultsStyle metaphor before the main builder body is implemented.
+
+### Step 2 – Left column skeleton
+Work top-down on the left-hand side:
+1. **Configurations section shell**
+   - Reserve the area where the configurations list will live.
+   - Add an ℹ️ icon linked to a new `docId`.
+2. **Atomic components section shell**
+   - Provide a header with name + ℹ️ and an empty body for now.
+3. **Search section shell**
+   - Stub the search bar area with its ℹ️ icon.
+
+Each section requires:
+- Info icon placement (BuildStyle).
+- A documentation key (Knowledge).
+- Click behavior opening the modal (Logic).
+
+### Step 3 – Center canvas area
+- Add a canvas header row (e.g., “Canvas”) with an ℹ️ icon.
+- Leave the canvas body empty initially.
+- Connect the documentation hook.
+
+### Step 4 – Right inspector
+- Add the inspector header (“Inspector” / “Details”) with an ℹ️ icon.
+- Keep the body empty but wired to the documentation system.
+
+Once these steps are complete, the entire frame—header, left column, canvas, and inspector—participates in the shared documentation output system even if deeper functionality is still pending.
+
+## 3. Why putting documentation first helps
+- Establishes a single reusable Results / ResultsStyle pattern for documentation.
+- Every new structural element inherits:
+  - A consistent info icon convention.
+  - A straightforward way to attach a `docId`.
+  - A predefined location for explanations to render.
+
+## 4. Interface/Builder doc: skeleton and contracts
+Keep the charter concise but explicit:
+- **Documentation engine definition**
+  - A global system that resolves `docId → content` (Knowledge/Results).
+  - Renders the content in a standard layout (ResultsStyle).
+  - Exposes a small Logic API: `openDoc(docId)` and `closeDoc()`.
+- **Minimal IR for documentation entries**
+  - `docId`
+  - `concern` (Build, Logic, Header, Canvas, etc.)
+  - `summary` (tooltip content)
+  - `sections[]` (title + body)
+  - `links[]` (cross-references)
+- **Interaction contracts**
+  - Any UI element can declare a `docId`.
+  - Tooltips show the `summary`.
+  - Clicking the element invokes `openDoc(docId)`.
+
+These constraints keep the implementation aligned with the charter while enabling the initial header and layout shells to ship quickly.
+
+## 5. Documentation engine as a dedicated living document
+After the builder frame exists:
+- Create a focused “Documentation Engine” living document (and eventually its own repo or package) that:
+  - Models documentation as Calculogic data.
+  - Defines one or more “Docs Projects.”
+  - Represents doc pages/topics as Configurations.
+  - Stores structured content in the Knowledge tab.
+  - Specifies Results/ResultsStyle for different surfaces (modals, side panels, full-page help).
+  - Declares export hooks for each UI type (web builder, VS Code extension, Electron desktop, etc.).
+
+This approach dogfoods Calculogic itself: the documentation engine becomes a Calculogic-powered application that the builder consumes.
+
+## 6. Practical sequence for today
+Inside the Interface living document:
+1. Add a short section titled “Documentation Engine: Skeleton & Contracts.”
+2. Document the IR fields, `openDoc` / `closeDoc`, and tooltip rules.
+3. Implement enough to support:
+   - Header tab documentation
+   - Header publish documentation
+   - Left/center/right frame shells
+4. Once the frame is real, spin up the dedicated Documentation Engine living document to:
+   - Model documentation as Calculogic configurations.
+   - Plan how documentation exports are loaded into the UI.
+
+This sequencing keeps the current document focused while laying the groundwork for a fully dogfooded, stack-agnostic documentation workflow.
